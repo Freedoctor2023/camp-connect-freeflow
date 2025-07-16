@@ -14,7 +14,365 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      camp_registrations: {
+        Row: {
+          amount_paid: number | null
+          attendance_status: string | null
+          camp_id: string
+          created_at: string
+          id: string
+          notes: string | null
+          payment_id: string | null
+          payment_status: string | null
+          profile_id: string
+          registration_date: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_paid?: number | null
+          attendance_status?: string | null
+          camp_id: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          payment_id?: string | null
+          payment_status?: string | null
+          profile_id: string
+          registration_date?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_paid?: number | null
+          attendance_status?: string | null
+          camp_id?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          payment_id?: string | null
+          payment_status?: string | null
+          profile_id?: string
+          registration_date?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "camp_registrations_camp_id_fkey"
+            columns: ["camp_id"]
+            isOneToOne: false
+            referencedRelation: "medical_camps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "camp_registrations_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      doctor_profiles: {
+        Row: {
+          approval_date: string | null
+          bio: string | null
+          clinic_address: string | null
+          clinic_name: string | null
+          consultation_fee: number | null
+          created_at: string
+          experience_years: number | null
+          id: string
+          is_approved: boolean | null
+          medical_license: string
+          profile_id: string
+          qualification: string
+          specialization: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          approval_date?: string | null
+          bio?: string | null
+          clinic_address?: string | null
+          clinic_name?: string | null
+          consultation_fee?: number | null
+          created_at?: string
+          experience_years?: number | null
+          id?: string
+          is_approved?: boolean | null
+          medical_license: string
+          profile_id: string
+          qualification: string
+          specialization: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          approval_date?: string | null
+          bio?: string | null
+          clinic_address?: string | null
+          clinic_name?: string | null
+          consultation_fee?: number | null
+          created_at?: string
+          experience_years?: number | null
+          id?: string
+          is_approved?: boolean | null
+          medical_license?: string
+          profile_id?: string
+          qualification?: string
+          specialization?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_profiles_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      medical_camps: {
+        Row: {
+          address: string
+          approval_date: string | null
+          approved_by: string | null
+          camp_type: string
+          capacity: number
+          city: string
+          created_at: string
+          date: string
+          description: string
+          doctor_id: string
+          end_time: string
+          id: string
+          location: string
+          pincode: string
+          price: number | null
+          registered_count: number | null
+          rejection_reason: string | null
+          specialization: string
+          start_time: string
+          state: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          address: string
+          approval_date?: string | null
+          approved_by?: string | null
+          camp_type: string
+          capacity: number
+          city: string
+          created_at?: string
+          date: string
+          description: string
+          doctor_id: string
+          end_time: string
+          id?: string
+          location: string
+          pincode: string
+          price?: number | null
+          registered_count?: number | null
+          rejection_reason?: string | null
+          specialization: string
+          start_time: string
+          state: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string
+          approval_date?: string | null
+          approved_by?: string | null
+          camp_type?: string
+          capacity?: number
+          city?: string
+          created_at?: string
+          date?: string
+          description?: string
+          doctor_id?: string
+          end_time?: string
+          id?: string
+          location?: string
+          pincode?: string
+          price?: number | null
+          registered_count?: number | null
+          rejection_reason?: string | null
+          specialization?: string
+          start_time?: string
+          state?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medical_camps_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          camp_id: string | null
+          created_at: string
+          id: string
+          is_read: boolean | null
+          message: string
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          camp_id?: string | null
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          message: string
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          camp_id?: string | null
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_camp_id_fkey"
+            columns: ["camp_id"]
+            isOneToOne: false
+            referencedRelation: "medical_camps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payments: {
+        Row: {
+          amount: number
+          commission_amount: number
+          created_at: string
+          currency: string | null
+          doctor_amount: number
+          id: string
+          payment_method: string | null
+          razorpay_order_id: string | null
+          razorpay_payment_id: string | null
+          registration_id: string
+          status: string
+          transaction_date: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          commission_amount: number
+          created_at?: string
+          currency?: string | null
+          doctor_amount: number
+          id?: string
+          payment_method?: string | null
+          razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
+          registration_id: string
+          status: string
+          transaction_date?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          commission_amount?: number
+          created_at?: string
+          currency?: string | null
+          doctor_amount?: number
+          id?: string
+          payment_method?: string | null
+          razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
+          registration_id?: string
+          status?: string
+          transaction_date?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "camp_registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          address: string | null
+          avatar_url: string | null
+          city: string | null
+          created_at: string
+          date_of_birth: string | null
+          full_name: string | null
+          gender: string | null
+          id: string
+          is_verified: boolean | null
+          phone: string | null
+          pincode: string | null
+          state: string | null
+          updated_at: string
+          user_id: string
+          user_type: string
+        }
+        Insert: {
+          address?: string | null
+          avatar_url?: string | null
+          city?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          full_name?: string | null
+          gender?: string | null
+          id?: string
+          is_verified?: boolean | null
+          phone?: string | null
+          pincode?: string | null
+          state?: string | null
+          updated_at?: string
+          user_id: string
+          user_type?: string
+        }
+        Update: {
+          address?: string | null
+          avatar_url?: string | null
+          city?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          full_name?: string | null
+          gender?: string | null
+          id?: string
+          is_verified?: boolean | null
+          phone?: string | null
+          pincode?: string | null
+          state?: string | null
+          updated_at?: string
+          user_id?: string
+          user_type?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

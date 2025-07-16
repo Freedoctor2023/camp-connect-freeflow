@@ -18,54 +18,7 @@ import {
   Clock
 } from 'lucide-react';
 
-// Mock data - will be replaced with real data from backend
-const featuredCamps = [
-  {
-    id: '1',
-    title: 'Free Diabetes Screening Camp',
-    description: 'Comprehensive diabetes screening including blood sugar tests and consultation.',
-    doctor: 'Priya Sharma',
-    specialization: 'Endocrinologist',
-    date: '2024-01-20',
-    time: '9:00 AM - 2:00 PM',
-    location: 'Community Health Center, Mumbai',
-    capacity: 100,
-    registered: 67,
-    price: 0,
-    status: 'upcoming' as const,
-    type: 'free' as const,
-  },
-  {
-    id: '2',
-    title: 'Cardiology Health Camp',
-    description: 'Heart health checkups with ECG and consultation with cardiologist.',
-    doctor: 'Rajesh Kumar',
-    specialization: 'Cardiologist',
-    date: '2024-01-22',
-    time: '10:00 AM - 4:00 PM',
-    location: 'City Hospital, Delhi',
-    capacity: 50,
-    registered: 23,
-    price: 500,
-    status: 'upcoming' as const,
-    type: 'paid' as const,
-  },
-  {
-    id: '3',
-    title: 'Eye Care Camp',
-    description: 'Free eye examination and vision testing for all ages.',
-    doctor: 'Amit Patel',
-    specialization: 'Ophthalmologist',
-    date: '2024-01-25',
-    time: '8:00 AM - 12:00 PM',
-    location: 'Vision Care Center, Bangalore',
-    capacity: 80,
-    registered: 42,
-    price: 0,
-    status: 'upcoming' as const,
-    type: 'free' as const,
-  }
-];
+import { useCamps } from '@/hooks/useCamps';
 
 const stats = [
   { icon: Users, label: 'Registered Users', value: '10,000+', color: 'text-primary' },
@@ -76,11 +29,32 @@ const stats = [
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
+  const { camps, registerForCamp } = useCamps();
 
-  const handleRegister = (campId: string) => {
-    // This will be implemented with real registration logic
-    console.log('Registering for camp:', campId);
+  const handleRegister = async (campId: string) => {
+    const result = await registerForCamp(campId);
+    if (result.success && result.requiresPayment) {
+      // TODO: Implement Razorpay payment integration
+      console.log('Payment required for amount:', result.amount);
+    }
   };
+
+  // Show only first 3 camps on home page
+  const featuredCamps = camps.slice(0, 3).map(camp => ({
+    id: camp.id,
+    title: camp.title,
+    description: camp.description,
+    doctor: camp.doctor_name || 'Unknown Doctor',
+    specialization: camp.specialization,
+    date: camp.date,
+    time: `${camp.start_time} - ${camp.end_time}`,
+    location: `${camp.location}, ${camp.city}`,
+    capacity: camp.capacity,
+    registered: camp.registered_count,
+    price: camp.price,
+    status: 'upcoming' as const,
+    type: camp.camp_type
+  }));
 
   return (
     <div className="min-h-screen bg-background">

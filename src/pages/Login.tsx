@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Eye, EyeOff, Heart, Mail, Lock } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -16,7 +16,14 @@ export default function Login() {
     email: '',
     password: ''
   });
-  const { toast } = useToast();
+  const { user, signIn } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -29,14 +36,13 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
 
-    // Simulate login process
-    setTimeout(() => {
-      setLoading(false);
-      toast({
-        title: "Login Successful!",
-        description: "Welcome back to FreeDoctor platform.",
-      });
-    }, 1000);
+    const { error } = await signIn(formData.email, formData.password);
+    
+    if (!error) {
+      navigate('/dashboard');
+    }
+    
+    setLoading(false);
   };
 
   return (

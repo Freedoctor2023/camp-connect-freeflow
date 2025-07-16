@@ -1,19 +1,37 @@
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Menu, X, User, Heart, Calendar, LogOut } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { useAuth } from '@/hooks/useAuth';
+import { 
+  Menu,
+  X,
+  Bell,
+  User,
+  LogOut,
+  Settings,
+  Heart,
+  Calendar,
+  Stethoscope
+} from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const location = useLocation();
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // This will be managed by auth context later
+  const { user, signOut, loading } = useAuth();
+  const navigate = useNavigate();
+  
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
 
   const navigation = [
     { name: 'Home', href: '/' },
@@ -21,8 +39,6 @@ export function Header() {
     { name: 'About', href: '/about' },
     { name: 'Contact', href: '/contact' },
   ];
-
-  const isActive = (path: string) => location.pathname === path;
 
   return (
     <header className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 border-b border-border">
@@ -46,55 +62,72 @@ export function Header() {
               <Link
                 key={item.name}
                 to={item.href}
-                className={`text-sm font-medium transition-colors hover:text-primary ${
-                  isActive(item.href) 
-                    ? 'text-primary border-b-2 border-primary' 
-                    : 'text-muted-foreground'
-                }`}
+                className="text-sm font-medium transition-colors hover:text-primary text-muted-foreground"
               >
                 {item.name}
               </Link>
             ))}
           </nav>
 
-          {/* Auth Section */}
+          {/* Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            {isLoggedIn ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="relative h-8 w-8 rounded-full">
-                    <User className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end">
-                  <DropdownMenuItem asChild>
-                    <Link to="/dashboard" className="flex items-center">
-                      <Heart className="mr-2 h-4 w-4" />
-                      Doctor Dashboard
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/my-camps" className="flex items-center">
-                      <Calendar className="mr-2 h-4 w-4" />
-                      My Camps
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => setIsLoggedIn(false)}>
-                    <LogOut className="mr-2 h-4 w-4" />
-                    Logout
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+            {user ? (
+              <div className="flex items-center space-x-3">
+                {/* Notifications */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="relative"
+                >
+                  <Bell className="h-4 w-4" />
+                  <Badge className="absolute -top-1 -right-1 px-1 min-w-[1.2rem] h-5">
+                    3
+                  </Badge>
+                </Button>
+
+                {/* User Menu */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="flex items-center space-x-2">
+                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                        <User className="h-4 w-4 text-primary" />
+                      </div>
+                      <span className="hidden lg:inline">{user.email}</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link to="/dashboard" className="flex items-center">
+                        <Stethoscope className="mr-2 h-4 w-4" />
+                        Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Settings className="mr-2 h-4 w-4" />
+                      Settings
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem 
+                      className="text-destructive cursor-pointer"
+                      onClick={handleSignOut}
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             ) : (
-              <>
-                <Button variant="ghost" asChild>
-                  <Link to="/login">Login</Link>
+              <div className="flex items-center space-x-3">
+                <Button variant="ghost" size="sm" asChild>
+                  <Link to="/login">Sign In</Link>
                 </Button>
-                <Button asChild>
-                  <Link to="/register">Register</Link>
+                <Button size="sm" asChild>
+                  <Link to="/register">Get Started</Link>
                 </Button>
-              </>
+              </div>
             )}
           </div>
 
@@ -117,18 +150,14 @@ export function Header() {
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`text-sm font-medium py-2 px-3 rounded-md transition-colors ${
-                    isActive(item.href)
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-muted-foreground hover:text-primary hover:bg-muted'
-                  }`}
+                  className="text-sm font-medium py-2 px-3 rounded-md transition-colors text-muted-foreground hover:text-primary hover:bg-muted"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.name}
                 </Link>
               ))}
               <div className="pt-4 border-t border-border mt-4">
-                {isLoggedIn ? (
+                {user ? (
                   <>
                     <Link
                       to="/dashboard"
@@ -139,12 +168,12 @@ export function Header() {
                     </Link>
                     <button
                       onClick={() => {
-                        setIsLoggedIn(false);
+                        handleSignOut();
                         setIsMenuOpen(false);
                       }}
                       className="block w-full text-left py-2 px-3 text-sm font-medium text-muted-foreground hover:text-primary"
                     >
-                      Logout
+                      Sign Out
                     </button>
                   </>
                 ) : (
@@ -154,14 +183,14 @@ export function Header() {
                       className="block py-2 px-3 text-sm font-medium text-muted-foreground hover:text-primary"
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      Login
+                      Sign In
                     </Link>
                     <Link
                       to="/register"
                       className="block py-2 px-3 text-sm font-medium text-muted-foreground hover:text-primary"
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      Register
+                      Get Started
                     </Link>
                   </>
                 )}
